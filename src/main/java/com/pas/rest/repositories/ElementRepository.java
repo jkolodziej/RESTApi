@@ -12,6 +12,7 @@ public class ElementRepository {
 
     private final ArrayList<Elem> elements = new ArrayList<>();
 
+
     public ElementRepository() {
         DataFiller dataFiller = new DataFiller();
         for (int i = 0; i < dataFiller.fillElementsWithData().size(); i++) {
@@ -63,15 +64,12 @@ public class ElementRepository {
             return null;
         }
     }
+    
+    // 
 
-    public void remove(Elem elem) {
+    public void remove(String id) {
         synchronized (elements) {
-            for (int i = 0; i < elements.size(); i++) {
-                Elem e = elements.get(i);
-                if (e.getId().equals(elem.getId())) {
-                    elements.remove(i);
-                }
-            }
+            elements.removeIf(elem -> id.equals(elem.getId()) && !elem.isRented());
         }
     }
 

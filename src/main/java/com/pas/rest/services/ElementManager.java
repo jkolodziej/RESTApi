@@ -5,6 +5,7 @@ import com.pas.rest.repositories.ElementRepository;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,9 +18,6 @@ public class ElementManager{
 
     @Inject
     private ElementRepository elemRepository;
-    private List<Elem> currentElements;
-    private List<Book> currentBooks;
-    private List<Newspaper> currentNewspapers;
 
     @GET
     @Path("{id}")
@@ -28,29 +26,42 @@ public class ElementManager{
         return elemRepository.findElement(id);
     }
 
+//    @POST
+//    @Path("books")
+//    @Consumes({MediaType.APPLICATION_JSON})
+    // type of param?
     public void createBook(String name, String genre, String author, int pages) {
         Book b = new Book(name, genre, author, pages);
         elemRepository.add(b);
     }
 
+//    @POST
+//    @Path("newspapers")
+//    @Consumes({MediaType.APPLICATION_JSON})
     public void createNewspaper(String name, String genre) {
         Newspaper n = new Newspaper(name, genre);
         elemRepository.add(n);
     }
 
+    @GET
+    @Path("books")
+    @Produces({MediaType.APPLICATION_JSON})
     public List<Book> getAllBooks() {
-        return currentBooks;
+        return elemRepository.getAllBooks();
     }
 
+    @GET
+    @Path("newspapers")
+    @Produces({MediaType.APPLICATION_JSON})
     public List<Newspaper> getAllNewspapers() {
-        return currentNewspapers;
+        return elemRepository.getAllNewspapers() ;
     }
 
     public List<Book> getFilteredBook(String id) {
         if ("".equals(id)) {
-            return currentBooks;
+            return elemRepository.getAllBooks();
         } else {
-            for (Book currentBook : currentBooks) {
+            for (Book currentBook : elemRepository.getAllBooks()) {
                 if (id.equals(currentBook.getId())) {
                     return List.of(currentBook);
                 }
@@ -61,19 +72,15 @@ public class ElementManager{
 
     public List<Newspaper> getFilteredNewspaper(String id) {
         if ("".equals(id)) {
-            return currentNewspapers;
+            return elemRepository.getAllNewspapers();
         } else {
-            for (Newspaper currentNewspaper : currentNewspapers) {
+            for (Newspaper currentNewspaper : elemRepository.getAllNewspapers()) {
                 if (id.equals(currentNewspaper.getId())) {
                     return List.of(currentNewspaper);
                 }
             }
         }
         return null;
-    }
-
-    public List<Elem> getCurrentElements() {
-        return currentElements;
     }
 
     public void modifyBook(Book book) {
@@ -90,10 +97,9 @@ public class ElementManager{
         return elemRepository.getElements();
     }
 
-    public void remove(Elem element) {
-        if (!element.isRented()) {
-            elemRepository.remove(element);
-        }
+    @DELETE
+    @Path("{id}")
+    public void remove(@PathParam("id") String id) {
+        elemRepository.remove(id);
     }
-
 }
