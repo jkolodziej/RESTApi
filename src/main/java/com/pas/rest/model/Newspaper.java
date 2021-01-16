@@ -6,6 +6,10 @@ import lombok.*;
 @Setter
 public class Newspaper extends Elem {
 
+    public Newspaper() {
+        super();
+    }
+
     public Newspaper(String name, String genre) {
         super(name, genre);
     }

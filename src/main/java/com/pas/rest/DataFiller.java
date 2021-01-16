@@ -21,13 +21,13 @@ public class DataFiller {
         elems.add(new Newspaper("Daily Prophet2", "Disinformation"));
         elems.add(new Newspaper("Daily Prophet3", "Disinformation"));
 
-        users.add(new Admin("Simon", "Sparrow", "SS2115", "12345678"));
-        users.add(new Admin("Caroline", "Kovaltzyk", "CK2115", "12345678"));
-        users.add(new ResourceAdmin("Juliet", "Circle", "JC2115", "12345678"));
+        users.add(new Admin("SS2115", "12345678"));
+        users.add(new Admin("CK2115", "12345678"));
+        users.add(new ResourceAdmin("JC2115", "12345678"));
 
-        users.add(new Renter("John", "Doe", "JD7", "12345678"));
-        users.add(new Renter("Thomas", "Friends", "TF7", "12345678"));
-        users.add(new Renter("Annie", "Tibbers", "AT7", "12345678"));
+        users.add(new Renter("JD7", "12345678"));
+        users.add(new Renter("TF7", "12345678"));
+        users.add(new Renter("AT7", "12345678"));
 
     }
 

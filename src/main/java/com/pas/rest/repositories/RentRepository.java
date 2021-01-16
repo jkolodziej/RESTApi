@@ -1,7 +1,6 @@
 package com.pas.rest.repositories;
 
 import java.util.ArrayList;
-import java.util.Date;
 import com.pas.rest.ID;
 import com.pas.rest.model.Rent;
 import javax.enterprise.context.ApplicationScoped;
@@ -15,7 +14,8 @@ public class RentRepository {
         this.rents = new ArrayList<>();
     }
 
-    public void add(Rent rent) {
+    //CREATE
+    public void addRent(Rent rent) {
         synchronized (rents) {
             if (rent == null) {
                 throw new IllegalArgumentException("Próba dodania wypożyczenia bez podania danych");
@@ -25,34 +25,22 @@ public class RentRepository {
         }
     }
 
-    public void remove(Rent rent) {
+    //READ
+    public ArrayList<Rent> getRents() {
         synchronized (rents) {
-            if (rent.getEndDate() == null) {
-                rent.getElement().setRented(false);
-                for (int i = 0; i < rents.size(); i++) {
-                    Rent r = rents.get(i);
-                    if (r.getId().equals(rent.getId())) {
-                        rents.remove(i);
-                    }
-                }
-            }
-        }
-    }
-    
-    public void endRent(Rent rent) {
-        synchronized (rents) {
-            for (Rent r : rents) {
-                if (r.getId().equals(rent.getId()) && r.getEndDate() == null) {
-                    rent.setEndDate(new Date());
-                    rent.getElement().setRented(false);
-                }
-            }
+            return new ArrayList<>(rents);
         }
     }
 
-    public ArrayList<Rent> getAllRents() {
+    public Rent getRentWithID(String id) {
         synchronized (rents) {
-            return new ArrayList<>(rents);
+            for (Rent rent : rents) {
+                if (rent.getId().equals(id)) {
+                    return rent;
+                }
+            }
+
+            return null;
         }
     }
 
@@ -67,28 +55,20 @@ public class RentRepository {
             return userRents;
         }
     }
-    
-    public ArrayList<Rent> getAllElementRents(String id) {
+
+    //DELETE
+    public void remove(Rent rent) {
         synchronized (rents) {
-            ArrayList<Rent> elemRents = new ArrayList<>();
-            for (Rent rent : rents) {
-                if (rent.getElement().getId().equals(id)) {
-                    elemRents.add(rent);
+            if (rent.getEndDate() == null) {
+                rent.getElement().setRented(false);
+                for (int i = 0; i < rents.size(); i++) {
+                    Rent r = rents.get(i);
+                    if (r.getId().equals(rent.getId())) {
+                        rents.remove(i);
+                    }
                 }
             }
-            return elemRents;
         }
     }
 
-    public Rent findRent(String id) {
-        synchronized (rents) {
-            for (Rent rent : rents) {
-                if (rent.getId().equals(id)) {
-                    return rent;
-                }
-            }
-
-            return null;
-        }
-    }
 }

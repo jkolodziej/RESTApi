@@ -16,59 +16,12 @@ public class UserRepository {
     public UserRepository() {
         DataFiller dataFiller = new DataFiller();
         for (int i = 0; i < dataFiller.fillUsersWithData().size(); i++) {
-            add(dataFiller.fillUsersWithData().get(i));
+            addUser(dataFiller.fillUsersWithData().get(i));
         }
     }
 
-    public User findUserById(String id) {
-        synchronized (users) {
-            for (User user : users) {
-                if (user.getId().equals(id)) {
-                    return user;
-                }
-            }
-            return null;
-        }
-    }
-
-    public User findUserByLogin(String login) {
-        synchronized (users) {
-            for (User user : users) {
-                if (user.getLogin().equals(login)) {
-                    return user;
-                }
-            }
-            return null;
-        }
-    }
-
-    public List<User> getFilteredUser(String id, String login) {
-        List<User> list = new ArrayList<>();
-        synchronized (users) {
-            for (User user : users) {
-                if ((id.equals("") || user.getId().startsWith(id))
-                        && (login.equals("") || user.getLogin().startsWith(login))) {
-                    list.add(user);
-                }
-            }
-            if (list.isEmpty()) {
-                return List.of(findUserById(id));
-            }
-            return list;
-        }
-    }
-
-    public void modifyUser(User user) {
-        synchronized (users) {
-            for (int i = 0; i < users.size(); i++) {
-                if (users.get(i).equals(user)) {
-                    users.set(i, user);
-                }
-            }
-        }
-    }
-
-    public void add(User user) {
+    //CREATE
+    public void addUser(User user) {
         synchronized (users) {
             if (user == null) {
                 throw new IllegalArgumentException("Próba dodania użytkownika bez podania danych");
@@ -85,9 +38,50 @@ public class UserRepository {
         }
     }
 
-    public List<User> getAllUsers() {
+    //READ
+    public List<User> getUsers() {
         synchronized (users) {
             return new ArrayList<>(users);
+        }
+    }
+
+    public User getUserWithID(String id) {
+        synchronized (users) {
+            for (User user : users) {
+                if (user.getId().equals(id)) {
+                    return user;
+                }
+            }
+            return null;
+        }
+    }
+
+    public User getUserWithLogin(String login) {
+        synchronized (users) {
+            for (User user : users) {
+                if (user.getLogin().equals(login)) {
+                    return user;
+                }
+            }
+            return null;
+        }
+    }
+
+    //UPDATE
+    public void modifyUser(String login, User user) {
+        synchronized (users) {
+            String userID = getUserWithLogin(login).getId();
+            for (int i = 0; i < users.size(); i++) {
+                if (users.get(i).getLogin().equals(login)) {
+                    if(user.getLogin() != null){
+                        users.get(i).setLogin(user.getLogin());
+                    }
+                    if(user.getPassword() != null){
+                        users.get(i).setPassword(user.getPassword());
+                    }
+                    users.get(i).setId(userID);
+                }
+            }
         }
     }
 
@@ -108,7 +102,7 @@ public class UserRepository {
         }
     }
 
-    public List<Renter> getAllRenters() {
+    public List<Renter> getRenters() {
         List<Renter> renters = new ArrayList<>();
         for (User u : users) {
             if (u instanceof Renter) {

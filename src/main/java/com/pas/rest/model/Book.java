@@ -8,6 +8,10 @@ public class Book extends Elem {
 
     private String author;
     private int pages;
+    
+    public Book() {
+        super();
+    }
 
     public Book(String name, String genre, String author, int pages) {
         super(name, genre);

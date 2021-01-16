@@ -3,11 +3,11 @@ package com.pas.rest.model;
 public class Admin extends User {
 
     public Admin() {
-
+        super();
     }
 
-    public Admin(String name, String surname, String login, String password) {
-        super(name, surname, login, password);
+    public Admin(String login, String password) {
+        super(login, password);
     }
 
     @Override

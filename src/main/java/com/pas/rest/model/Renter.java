@@ -10,8 +10,12 @@ public class Renter extends User {
 
     private List<Rent> rents = new ArrayList<>();
 
-    public Renter(String name, String surname, String login, String password) {
-        super(name, surname, login, password);
+    public Renter() {
+        super();
+    }
+
+    public Renter(String login, String password) {
+        super(login, password);
     }
 
     public void addRent(Rent rent) {
@@ -22,4 +26,5 @@ public class Renter extends User {
     public String toString() {
         return "\nWypożyczający" + super.toString();
     }
+
 }
