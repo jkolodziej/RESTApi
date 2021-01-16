@@ -1,5 +1,7 @@
 package com.pas.rest.model;
 
+import com.pas.rest.adapters.SerializeStringToEmptyAdapter;
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +26,10 @@ public class User {
 
     public void setActivity(boolean active) {
         this.active = active;
+    }
+    
+    @JsonbTypeAdapter(SerializeStringToEmptyAdapter.class)
+    public String getPassword(){
+        return password;
     }
 }

@@ -2,7 +2,6 @@ package com.pas.rest.repositories;
 
 import com.pas.rest.DataFiller;
 import com.pas.rest.ID;
-import com.pas.rest.model.Renter;
 import com.pas.rest.model.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +20,10 @@ public class UserRepository {
     }
 
     //CREATE
-    public void addUser(User user) {
+    public void addUser(User user) throws IllegalArgumentException {
         synchronized (users) {
             if (user == null) {
-                throw new IllegalArgumentException("Próba dodania użytkownika bez podania danych");
+                throw new NullPointerException("Próba dodania użytkownika bez podania danych");
             }
             for (User u : users) {
                 if (u.getLogin().equals(user.getLogin())) {
@@ -73,43 +72,16 @@ public class UserRepository {
             String userID = getUserWithLogin(login).getId();
             for (int i = 0; i < users.size(); i++) {
                 if (users.get(i).getLogin().equals(login)) {
-                    if(user.getLogin() != null){
+                    if (user.getLogin() != null) {
                         users.get(i).setLogin(user.getLogin());
                     }
-                    if(user.getPassword() != null){
+                    if (user.getPassword() != null) {
                         users.get(i).setPassword(user.getPassword());
                     }
                     users.get(i).setId(userID);
                 }
             }
         }
-    }
-
-    public void changeUserActivity(User user, boolean active) {
-        synchronized (users) {
-            user.setActivity(active);
-        }
-    }
-
-    public String toString(User user) {
-        synchronized (users) {
-            for (User u : users) {
-                if (user.getId().equals(u.getId())) {
-                    return user.toString();
-                }
-            }
-            return "W bazie nie ma takiego użytkownika";
-        }
-    }
-
-    public List<Renter> getRenters() {
-        List<Renter> renters = new ArrayList<>();
-        for (User u : users) {
-            if (u instanceof Renter) {
-                renters.add((Renter) u);
-            }
-        }
-        return renters;
     }
 
 }
