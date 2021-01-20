@@ -7,14 +7,18 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 @RequestScoped
 @Path("elements")
@@ -22,56 +26,106 @@ public class ElementService {
 
     @Inject
     private ElementRepository elemRepository;
-    
+
     //CREATE BOOK
     @POST
     @Path("/books")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void createElement(Book book) {
-        elemRepository.addElement(book);
+    public Response createElement(Book book, @Context UriInfo uriInfo) {
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        try {
+            elemRepository.addElement(book);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Status.CONFLICT.getStatusCode(), e.getMessage()).build();
+        }
+        return Response.created(uriBuilder.build())
+                .entity(book)
+                .build();
+
     }
+
     //CREATE NEWSPAPER
     @POST
     @Path("/newspapers")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void createElement(Newspaper newspaper) {
-        elemRepository.addElement(newspaper);
+    public Response createElement(Newspaper newspaper, @Context UriInfo uriInfo) {
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        try {
+            elemRepository.addElement(newspaper);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Status.CONFLICT.getStatusCode(), e.getMessage()).build();
+        }
+        return Response.created(uriBuilder.build())
+                .entity(newspaper)
+                .build();
     }
-    
+
     //READ
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public List<Elem> getElements() {
-        return elemRepository.getElements();
+    public Response getElements() {
+        List<Elem> elements = elemRepository.getElements();
+        if (elements == null) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "Element repository does not exist").build();
+        }
+        return Response.ok()
+                .entity(elements)
+                .build();
     }
-    
+
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Elem findElement(@PathParam("id") String id) {
-        return elemRepository.getElementWithID(id);
+    public Response findElement(@PathParam("id") String id) {
+        Elem element = elemRepository.getElementWithID(id);
+        if (element == null) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
+        }
+        return Response.ok()
+                .entity(element)
+                .build();
     }
-    
+
     //UPDATE BOOK
     @PUT
     @Path("/books/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void modifyElement(@PathParam("id") String id, Book elem) {
-        elemRepository.modifyElement(id, elem);
+    public Response modifyElement(@PathParam("id") String id, Book elem) {
+        if (elemRepository.getElementWithID(id) == null) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
+        } else {
+            elemRepository.modifyElement(id, elem);
+            return Response.ok()
+                    .entity(elem)
+                    .build();
+        }
     }
-    
+
     //UPDATE NEWSPAPER
     @PUT
     @Path("/newspapers/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void modifyElement(@PathParam("id") String id, Newspaper elem) {
-        elemRepository.modifyElement(id, elem);
+    public Response modifyElement(@PathParam("id") String id, Newspaper elem) {
+        if (elemRepository.getElementWithID(id) == null) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
+        } else {
+            elemRepository.modifyElement(id, elem);
+            return Response.ok()
+                    .entity(elem)
+                    .build();
+        }
     }
 
     //DELETE
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") String id) {
-        elemRepository.removeElement(id);
+    public Response remove(@PathParam("id") String id) {
+        if (elemRepository.getElementWithID(id) == null) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
+        } else {
+            elemRepository.removeElement(id);
+            return Response.ok()
+                    .build();
+        }
     }
 }

@@ -114,23 +114,44 @@ public class UserService {
     @PUT
     @Path("/renters/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void modifyUser(@PathParam("login") String login, Renter user) {
-        userRepository.modifyUser(login, user);
+    public Response modifyUser(@PathParam("login") String login, Renter user) {
+        if(userRepository.getUserWithLogin(login) == null){
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
+        } else{
+            userRepository.modifyUser(login, user);
+            return Response.ok()
+                    .entity(user)
+                    .build();
+        }
     }
 
     //UPDATE
     @PUT
     @Path("/resourceAdmins/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void modifyUser(@PathParam("login") String login, ResourceAdmin user) {
-        userRepository.modifyUser(login, user);
+    public Response modifyUser(@PathParam("login") String login, ResourceAdmin user) {
+        if(userRepository.getUserWithLogin(login) == null){
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
+        } else{
+            userRepository.modifyUser(login, user);
+            return Response.ok()
+                    .entity(user)
+                    .build();
+        }
     }
 
     //UPDATE
     @PUT
     @Path("/admins/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void modifyUser(@PathParam("login") String login, Admin user) {
-        userRepository.modifyUser(login, user);
+    public Response modifyUser(@PathParam("login") String login, Admin user) {
+        userRepository.modifyUser(login, user);if(userRepository.getUserWithLogin(login) == null){
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
+        } else{
+            userRepository.modifyUser(login, user);
+            return Response.ok()
+                    .entity(user)
+                    .build();
+        }
     }
 }

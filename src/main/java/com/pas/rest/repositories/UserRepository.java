@@ -65,6 +65,17 @@ public class UserRepository {
             return null;
         }
     }
+    
+    public User getActiveUserWithLoginPassword(String login, String password) {
+        synchronized (users) {
+            for (User user : users) {
+                if (user.getLogin().equals(login) && user.getPassword().equals(password) && user.isActive()) {
+                    return user;
+                }
+            }
+            return null;
+        }
+    }
 
     //UPDATE
     public void modifyUser(String login, User user) {
