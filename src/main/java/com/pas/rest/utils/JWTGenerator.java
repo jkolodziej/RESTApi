@@ -8,9 +8,12 @@ package com.pas.rest.utils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.KeyLengthException;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import java.text.ParseException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import java.util.Date;
@@ -49,5 +52,36 @@ public class JWTGenerator {
         }
     }
     
+    public static String updateJWTString(String serializedJWTString){
+        SignedJWT previousSignedJWT = null;
+        try{
+            final JWSSigner signer = new MACSigner(SECRET);
+            previousSignedJWT = SignedJWT.parse(serializedJWTString);
+            final JWTClaimsSet previousJWTClaimsSet = previousSignedJWT.getJWTClaimsSet();
+            final JWTClaimsSet newJWTClaimsSet = new JWTClaimsSet.Builder()
+                    .subject(previousJWTClaimsSet.getSubject())
+                    .claim("auth", previousJWTClaimsSet.getClaim("auth"))
+                    .issuer(previousJWTClaimsSet.getIssuer())
+                    .expirationTime(new Date(new Date().getTime() + JWT_TIMEOUT))
+                    .build();
+            
+            final SignedJWT newSignedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), newJWTClaimsSet);
+            newSignedJWT.sign(signer);
+            return newSignedJWT.serialize();
+        } catch(JOSEException | ParseException ex){
+            Logger.getLogger(JWTGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            return "JWT failure"; 
+        }
+    }
     
+    public static boolean validateJWTSignature(String serializedJWTString){
+        try{
+            final JWSObject objectJWS = JWSObject.parse(serializedJWTString); 
+            final JWSVerifier verifierJWS = new MACVerifier(SECRET);
+            return objectJWS.verify(verifierJWS);
+        } catch(JOSEException | ParseException ex){
+            Logger.getLogger(JWTGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            return false; 
+        }
+    }
 }
