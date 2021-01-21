@@ -33,7 +33,7 @@ public class JWTGenerator {
     public static String generateJWTString(CredentialValidationResult credential) {
 
         try {
-            final JWSSigner signer = new MACSigner(SECRET);
+            final JWSSigner signerJWS = new MACSigner(SECRET);
             final JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(credential.getCallerPrincipal().getName())
                     .claim("auth", String.join(",", credential.getCallerGroups()))

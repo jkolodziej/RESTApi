@@ -9,6 +9,7 @@ import lombok.*;
 public class Renter extends User {
 
     private List<Rent> rents = new ArrayList<>();
+    private final String accessLevel = "RENTER";
 
     public Renter() {
         super();
@@ -26,5 +27,4 @@ public class Renter extends User {
     public String toString() {
         return "\nWypożyczający" + super.toString();
     }
-
 }

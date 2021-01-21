@@ -7,6 +7,8 @@ package com.pas.rest.security;
 
 import com.pas.rest.model.User;
 import com.pas.rest.repositories.UserRepository;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +52,7 @@ public class CustomIdentityStore implements IdentityStore {
             User user = userRepository.getActiveUserWithLoginPassword(usernamePassword.getCaller(), usernamePassword.getPasswordAsString());
             LOG.log(Level.SEVERE, "validation of login {0} resulted in {1}", new Object[]{usernamePassword.getCaller(), user});
             if (user != null && user.getPassword().equals(usernamePassword.getPasswordAsString())) {
-                return new CredentialValidationResult(usernamePassword.getCaller());
+                return new CredentialValidationResult(usernamePassword.getCaller(), new HashSet<>(Arrays.asList(user.getAccessLevel())));
             } else {
                 return CredentialValidationResult.INVALID_RESULT;
             }

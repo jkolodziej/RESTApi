@@ -1,6 +1,8 @@
 package com.pas.rest.model;
 
 public class ResourceAdmin extends User {
+    
+    private final String accessLevel = "RESOURCEADMIN";
 
     public ResourceAdmin() {
         super();
