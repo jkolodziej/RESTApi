@@ -22,7 +22,7 @@ public class Renter extends User {
     public void addRent(Rent rent) {
         rents.add(rent);
     }
-
+    
     @Override
     public String toString() {
         return "\nWypożyczający" + super.toString();

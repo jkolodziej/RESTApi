@@ -37,7 +37,7 @@ public class ElementRepository {
         }
     }
 
-    public Elem getElementWithID(String id) {
+    public Elem getElement(String id) {
         synchronized (elements) {
             for (Elem element : elements) {
                 if (element.getId().equals(id)) {

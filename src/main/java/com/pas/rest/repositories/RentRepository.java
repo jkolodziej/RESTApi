@@ -2,7 +2,9 @@ package com.pas.rest.repositories;
 
 import java.util.ArrayList;
 import com.pas.rest.ID;
+import com.pas.rest.model.Elem;
 import com.pas.rest.model.Rent;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -32,7 +34,7 @@ public class RentRepository {
         }
     }
 
-    public Rent getRentWithID(String id) {
+    public Rent getRent(String id) {
         synchronized (rents) {
             for (Rent rent : rents) {
                 if (rent.getId().equals(id)) {
@@ -44,9 +46,9 @@ public class RentRepository {
         }
     }
 
-    public ArrayList<Rent> getAllUserRents(String id) {
+    public List<Rent> getAllUserRents(String id) {
         synchronized (rents) {
-            ArrayList<Rent> userRents = new ArrayList<>();
+            List<Rent> userRents = new ArrayList<>();
             for (Rent rent : rents) {
                 if (rent.getUser().getId().equals(id)) {
                     userRents.add(rent);
@@ -70,5 +72,7 @@ public class RentRepository {
             }
         }
     }
+
+    
 
 }

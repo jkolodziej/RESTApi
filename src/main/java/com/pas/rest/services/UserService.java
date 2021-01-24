@@ -1,14 +1,13 @@
 package com.pas.rest.services;
 
-import com.nimbusds.jose.JOSEException;
 import com.pas.rest.filters.EntitySignatureValidatorFilterBinding;
+import com.pas.rest.managers.UserManager;
 import com.pas.rest.model.*;
-import com.pas.rest.repositories.RentRepository;
-import com.pas.rest.repositories.UserRepository;
 import com.pas.rest.utils.EntityIdentitySignerVerifier;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -32,38 +31,34 @@ import javax.ws.rs.core.UriInfo;
 public class UserService {
 
     @Inject
-    private UserRepository userRepository;
-    @Inject
-    private RentRepository rentRepository;
+    private UserManager userManager;
 
-    public UserService() {
-    }
+    public UserService() {}
 
     //CREATE
     @POST
     @Path("/renters")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response createRenter(Renter renter, @Context UriInfo uriInfo) {
+    public Response createRenter(@Valid Renter renter, @Context UriInfo uriInfo) {
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         try {
-            userRepository.addUser(renter);
+            userManager.creatUser(renter);
         } catch (IllegalArgumentException e) {
             return Response.status(Status.CONFLICT.getStatusCode(), e.getMessage()).build();
         } catch (NullPointerException e) {
             return Response.status(422, e.getMessage()).build();
         }
         return Response.created(uriBuilder.build())
-                .entity(renter)
                 .build();
     }
 
     @POST
     @Path("/resourceAdmins")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response createResourceAdmin(ResourceAdmin resourceAdmin, @Context UriInfo uriInfo) {
+    public Response createResourceAdmin(@Valid ResourceAdmin resourceAdmin, @Context UriInfo uriInfo) {
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         try {
-            userRepository.addUser(resourceAdmin);
+            userManager.creatUser(resourceAdmin);
         } catch (IllegalArgumentException e) {
             return Response.status(Status.CONFLICT.getStatusCode(), e.getMessage()).build();
         } catch (NullPointerException e) {
@@ -77,10 +72,10 @@ public class UserService {
     @POST
     @Path("/admins")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response createAdmin(Admin admin, @Context UriInfo uriInfo) {
+    public Response createAdmin(@Valid Admin admin, @Context UriInfo uriInfo) {
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         try {
-            userRepository.addUser(admin);
+            userManager.creatUser(admin);
         } catch (IllegalArgumentException e) {
             return Response.status(Status.CONFLICT.getStatusCode(), e.getMessage()).build();
         } catch (NullPointerException e) {
@@ -95,7 +90,7 @@ public class UserService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getUsers() {
-        List<User> users = userRepository.getUsers();
+        List<User> users = userManager.getAllUsers();
         if (users == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User repository does not exist").build();
         }
@@ -108,7 +103,7 @@ public class UserService {
     @Path("{login}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response findUserByLogin(@PathParam("login") String login) {
-        User user = userRepository.getUserWithLogin(login);
+        User user = userManager.getUserWithLogin(login);
         if (user == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
         }
@@ -122,7 +117,7 @@ public class UserService {
     @Path("self")
     @Produces({MediaType.APPLICATION_JSON})
     public Response findSelf(@Context SecurityContext securityContext){
-        User user = userRepository.getUserWithLogin(securityContext.getUserPrincipal().getName());
+        User user = userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
         return Response.ok()
                 .entity(user)
                 .build();
@@ -133,17 +128,17 @@ public class UserService {
     @Path("{login}")
     @Consumes({MediaType.APPLICATION_JSON})
     @EntitySignatureValidatorFilterBinding
-    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, Renter user) {
+    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Renter user) {
 
         if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, user)) {
             return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
         }
 
-        if (userRepository.getUserWithLogin(login) == null) {
+        if (userManager.getUserWithLogin(login) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
         }
 
-        userRepository.modifyUser(login, user);
+        userManager.modifyUser(login, user);
 
         return Response.ok()
                 .entity(user)
@@ -154,17 +149,17 @@ public class UserService {
     @PUT
     @Path("/resourceAdmins/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, ResourceAdmin user) {
+    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid ResourceAdmin user) {
 
         if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, user)) {
             return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
         }
 
-        if (userRepository.getUserWithLogin(login) == null) {
+        if (userManager.getUserWithLogin(login) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
         }
 
-        userRepository.modifyUser(login, user);
+        userManager.modifyUser(login, user);
 
         return Response.ok()
                 .entity(user)
@@ -175,17 +170,17 @@ public class UserService {
     @PUT
     @Path("/admins/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, Admin user) {
+    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Admin user) {
 
         if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, user)) {
             return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
         }
 
-        if (userRepository.getUserWithLogin(login) == null) {
+        if (userManager.getUserWithLogin(login) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
         }
 
-        userRepository.modifyUser(login, user);
+        userManager.modifyUser(login, user);
 
         return Response.ok()
                 .entity(user)

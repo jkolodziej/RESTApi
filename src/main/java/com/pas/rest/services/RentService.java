@@ -1,12 +1,16 @@
 package com.pas.rest.services;
 
+import com.pas.rest.managers.ElementManager;
+import com.pas.rest.managers.RentManager;
+import com.pas.rest.managers.UserManager;
 import com.pas.rest.model.*;
-import com.pas.rest.repositories.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import javax.inject.Inject;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,28 +29,30 @@ import javax.ws.rs.core.UriInfo;
 public class RentService {
 
     @Inject
-    private RentRepository rentRepository;
+    private RentManager rentManager;
     @Inject
-    private UserRepository userRepository;
-    @Inject
-    private ElementRepository elemRepository;
-
+    private UserManager userManager;
+    @Inject 
+    private ElementManager elementManager;
 
     //CREATE
     @POST
     @Path("{elementID}")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response createRent(@PathParam("elementID") String elementID, @Context UriInfo uriInfo) {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-        Elem element = elemRepository.getElementWithID(elementID);
-        Renter user = (Renter) userRepository.getUserWithLogin("JD7");
+        Elem element = elementManager.getElementWithID(elementID);
+        Renter user = (Renter) userManager.getUserWithLogin("JD7");
         LocalDate startTime = LocalDate.of(2021,6,12);
-        if (element.isRented() || !user.isActive() || startTime.compareTo(LocalDate.now()) < 0 || (user instanceof Renter) == false) {
+        if (element.isRented() || !user.isActive() || (user instanceof Renter) == false) {
             //throw new IllegalArgumentException("Element is already rented, user is inactive, is not a renter or the date is from past");
-            return Response.status(Status.CONFLICT.getStatusCode(), "Element is already rented, user is inactive, is not a renter or the date is from past").build();
+            return Response.status(Status.CONFLICT.getStatusCode(), "Element is already rented, user is inactive or is not a renter").build();
         }
         Rent rent = new Rent(element, user, startTime);
-        rentRepository.addRent(rent);
+        
+        rentManager.createRent(rent);
         //user.addRent(rent);
         element.setRented(true);
         return Response.created(uriBuilder.build())
@@ -58,7 +64,7 @@ public class RentService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getRents() {
-        List<Rent> rents = rentRepository.getRents();
+        List<Rent> rents = rentManager.getRents();
         if (rents == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "Rent repository does not exist").build();
         }
@@ -71,7 +77,7 @@ public class RentService {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response findRent(@PathParam("id") String id) {
-        Rent rent = rentRepository.getRentWithID(id);
+        Rent rent = rentManager.getRentWithID(id);
         if (rent == null){
             return Response.status(Status.NOT_FOUND.getStatusCode(), "Rent does not exist").build();
         }
@@ -84,7 +90,7 @@ public class RentService {
     @Path("/userRents/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllUserRents(@PathParam("id") String id) {
-        List<Rent> userRents = rentRepository.getAllUserRents(id);
+        List<Rent> userRents = rentManager.getAllUserRents(id);
         if (userRents == null){
             return Response.status(Status.NOT_FOUND.getStatusCode(), "").build();
         }
@@ -93,13 +99,4 @@ public class RentService {
                 .build();
     }
 
-    public boolean isRented(Elem element) {
-        for (Rent rent : rentRepository.getRents()) {
-            if (rent.getElement().equals(element) && rent.getElement().isRented()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
