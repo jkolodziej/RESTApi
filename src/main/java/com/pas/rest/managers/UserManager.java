@@ -45,5 +45,8 @@ public class UserManager {
     public boolean checkIfUserIsActive(String login){
          return userRepository.getUserWithLogin(login).isActive();
     }
-
+    
+     public void changeUserActivity(String login) {
+         userRepository.changeUserActivity(login);
+    }
 }

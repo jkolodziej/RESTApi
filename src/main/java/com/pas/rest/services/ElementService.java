@@ -2,13 +2,17 @@ package com.pas.rest.services;
 
 import com.pas.rest.managers.ElementManager;
 import com.pas.rest.model.*;
+import com.pas.rest.utils.EntityIdentitySignerVerifier;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -84,6 +88,7 @@ public class ElementService {
         }
         return Response.ok()
                 .entity(element)
+                .tag(EntityIdentitySignerVerifier.calculateEntitySignature(element))
                 .build();
     }
 
@@ -91,7 +96,12 @@ public class ElementService {
     @PUT
     @Path("/books/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response modifyElement(@PathParam("id") String id, @Valid Book elem) {
+    public Response modifyElement(@PathParam("id") String id, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Book elem) {
+
+        if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, elem)) {
+            return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
+        }
+
         if (elemManager.getElementWithID(id) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
         } else {
@@ -106,7 +116,12 @@ public class ElementService {
     @PUT
     @Path("/newspapers/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response modifyElement(@PathParam("id") String id, @Valid Newspaper elem) {
+    public Response modifyElement(@PathParam("id") String id, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Newspaper elem) {
+
+        if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, elem)) {
+            return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
+        }
+        
         if (elemManager.getElementWithID(id) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
         } else {

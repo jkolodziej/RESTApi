@@ -7,8 +7,6 @@ package com.pas.rest.security;
 
 import com.nimbusds.jwt.SignedJWT;
 import com.pas.rest.managers.UserManager;
-import static com.pas.rest.security.JWTAuthentication.AUTHORIZATION_HEADER;
-import static com.pas.rest.security.JWTAuthentication.BEARER;
 import com.pas.rest.utils.JWTGenerator;
 import java.text.ParseException;
 import java.util.logging.Logger;

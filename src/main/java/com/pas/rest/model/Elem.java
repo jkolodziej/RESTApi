@@ -1,12 +1,14 @@
 package com.pas.rest.model;
 
+import com.pas.rest.SignableEntity;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
 @Setter
-public class Elem {
+public class Elem implements SignableEntity {
 
     private String id;
     @NotNull
@@ -29,5 +31,11 @@ public class Elem {
     @Override
     public String toString() {
         return "\nTytuł: " + name + "\nGatunek: " + genre;
+    }
+
+    @Override
+    @JsonbTransient
+    public String getSignablePayload() {
+        return id;
     }
 }

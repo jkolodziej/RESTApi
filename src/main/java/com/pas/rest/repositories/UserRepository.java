@@ -65,7 +65,7 @@ public class UserRepository {
             return null;
         }
     }
-    
+
     public User getActiveUserWithLoginPassword(String login, String password) {
         synchronized (users) {
             for (User user : users) {
@@ -92,6 +92,14 @@ public class UserRepository {
                     users.get(i).setId(userID);
                 }
             }
+        }
+    }
+
+    public void changeUserActivity(String login) {
+        if (getUserWithLogin(login).isActive()) {
+            getUserWithLogin(login).setActive(false);
+        } else {
+            getUserWithLogin(login).setActive(true);
         }
     }
 

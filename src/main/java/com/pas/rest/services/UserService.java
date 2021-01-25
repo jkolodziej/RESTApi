@@ -33,7 +33,8 @@ public class UserService {
     @Inject
     private UserManager userManager;
 
-    public UserService() {}
+    public UserService() {
+    }
 
     //CREATE
     @POST
@@ -49,6 +50,7 @@ public class UserService {
             return Response.status(422, e.getMessage()).build();
         }
         return Response.created(uriBuilder.build())
+                .entity(renter)
                 .build();
     }
 
@@ -112,11 +114,11 @@ public class UserService {
                 .tag(EntityIdentitySignerVerifier.calculateEntitySignature(user))
                 .build();
     }
-    
+
     @GET
     @Path("self")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response findSelf(@Context SecurityContext securityContext){
+    public Response findSelf(@Context SecurityContext securityContext) {
         User user = userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
         return Response.ok()
                 .entity(user)
@@ -125,7 +127,7 @@ public class UserService {
 
     //UPDATE
     @PUT
-    @Path("{login}")
+    @Path("/renters/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
     @EntitySignatureValidatorFilterBinding
     public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Renter user) {
@@ -181,6 +183,24 @@ public class UserService {
         }
 
         userManager.modifyUser(login, user);
+
+        return Response.ok()
+                .entity(user)
+                .build();
+    }
+
+    // CHANGE ACTIVITY
+    @PUT
+    @Path("/activity/{login}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response changeActivity(@PathParam("login") String login) {
+
+        User user = userManager.getUserWithLogin(login);
+        if (user == null) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
+        }
+
+        userManager.changeUserActivity(login);
 
         return Response.ok()
                 .entity(user)
