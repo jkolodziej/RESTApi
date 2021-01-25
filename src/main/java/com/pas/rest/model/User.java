@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.pas.rest.SignableEntity;
+import com.pas.rest.adapters.SerializeStringToEmptyAdapter;
+import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -23,9 +26,9 @@ public class User implements SignableEntity {
     @NotNull
     @NotEmpty
     @Size(min = 8)
+    @JsonbProperty
     private String password;
     private String accessLevel;
-    @AssertTrue
     private boolean active;
 
     public User() {
@@ -44,8 +47,7 @@ public class User implements SignableEntity {
         this.active = active;
     }
     
-//    @JsonbTypeAdapter(SerializeStringToEmptyAdapter.class)
-    @JsonIgnore
+    @JsonbTypeAdapter(SerializeStringToEmptyAdapter.class)
     public String getPassword() {
         return password;
     }

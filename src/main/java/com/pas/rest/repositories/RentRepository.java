@@ -54,7 +54,7 @@ public class RentRepository {
                     userRents.add(rent);
                 }
             }
-            return userRents;
+            return new ArrayList<>(userRents);
         }
     }
 

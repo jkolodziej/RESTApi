@@ -21,6 +21,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -39,21 +40,17 @@ public class RentService {
     @POST
     @Path("{elementID}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response createRent(@PathParam("elementID") String elementID, @Context UriInfo uriInfo) {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
+    public Response createRent(@PathParam("elementID") String elementID, @Context UriInfo uriInfo, @Context SecurityContext securityContext) {
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         Elem element = elementManager.getElementWithID(elementID);
-        Renter user = (Renter) userManager.getUserWithLogin("JD7");
-        LocalDate startTime = LocalDate.of(2021,6,12);
-        if (element.isRented() || !user.isActive() || (user instanceof Renter) == false) {
-            //throw new IllegalArgumentException("Element is already rented, user is inactive, is not a renter or the date is from past");
-            return Response.status(Status.CONFLICT.getStatusCode(), "Element is already rented, user is inactive or is not a renter").build();
+        Renter user = (Renter) userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
+        LocalDate startTime = LocalDate.now();
+        if (element.isRented() || !user.isActive() || (user instanceof Renter) == false) {;
+            return Response.status(Status.CONFLICT.getStatusCode(), "Element is already rented or user is inactive").build();
         }
         Rent rent = new Rent(element, user, startTime);
         
         rentManager.createRent(rent);
-        //user.addRent(rent);
         element.setRented(true);
         return Response.created(uriBuilder.build())
                 .entity(rent)
@@ -87,10 +84,11 @@ public class RentService {
     }
 
     @GET
-    @Path("/userRents/{id}")
+    @Path("self")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAllUserRents(@PathParam("id") String id) {
-        List<Rent> userRents = rentManager.getAllUserRents(id);
+    public Response getAllUserRents(@PathParam("id") String id, @Context SecurityContext securityContext) {
+        Renter renter = (Renter) userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
+        List<Rent> userRents = rentManager.getAllUserRents(renter.getLogin());
         if (userRents == null){
             return Response.status(Status.NOT_FOUND.getStatusCode(), "").build();
         }
