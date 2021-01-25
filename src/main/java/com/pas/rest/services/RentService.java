@@ -8,9 +8,6 @@ import java.time.LocalDate;
 import javax.inject.Inject;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -43,6 +40,9 @@ public class RentService {
     public Response createRent(@PathParam("elementID") String elementID, @Context UriInfo uriInfo, @Context SecurityContext securityContext) {
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         Elem element = elementManager.getElementWithID(elementID);
+        if(element == null){
+            return Response.status(Status.NOT_FOUND.getStatusCode(), "Element does not exist").build();
+        }
         Renter user = (Renter) userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
         LocalDate startTime = LocalDate.now();
         if (element.isRented() || !user.isActive() || (user instanceof Renter) == false) {;
@@ -87,8 +87,9 @@ public class RentService {
     @Path("self")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllUserRents(@PathParam("id") String id, @Context SecurityContext securityContext) {
-        Renter renter = (Renter) userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
-        List<Rent> userRents = rentManager.getAllUserRents(renter.getLogin());
+        User renter = userManager.getUserWithLogin(securityContext.getUserPrincipal().getName());
+        List<Rent> userRents = rentManager.getAllUserRents(renter.getId());
+        System.out.print(userRents);
         if (userRents == null){
             return Response.status(Status.NOT_FOUND.getStatusCode(), "").build();
         }

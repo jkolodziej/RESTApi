@@ -2,7 +2,6 @@ package com.pas.rest.repositories;
 
 import java.util.ArrayList;
 import com.pas.rest.ID;
-import com.pas.rest.model.Elem;
 import com.pas.rest.model.Rent;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;

@@ -1,5 +1,9 @@
 package com.pas.rest.model;
 
+import lombok.*;
+
+@Getter
+@Setter
 public class ResourceAdmin extends User {
     
     private final String accessLevel = "RESOURCEADMIN";

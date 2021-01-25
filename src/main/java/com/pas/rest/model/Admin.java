@@ -1,5 +1,9 @@
 package com.pas.rest.model;
 
+import lombok.*;
+
+@Getter
+@Setter
 public class Admin extends User {
     
     private final String accessLevel = "ADMIN";
