@@ -12,8 +12,8 @@ public class ResourceAdmin extends User {
         super();
     }
 
-    public ResourceAdmin(String login, String password) {
-        super(login, password);
+    public ResourceAdmin(String login, String password, String name, String surname) {
+        super(login, password, name, surname);
     }
 
     @Override

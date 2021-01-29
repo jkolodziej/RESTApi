@@ -19,6 +19,8 @@ public class User implements SignableEntity {
     @NotNull
     @NotEmpty
     private String login;
+    private String name;
+    private String surname;
     @NotNull
     @NotEmpty
     @Size(min = 8)
@@ -32,9 +34,11 @@ public class User implements SignableEntity {
         this.accessLevel = this.getClass().getSimpleName().toUpperCase();
     }
 
-    public User(String login, String password) {
+    public User(String login, String password, String name, String surname) {
         this.login = login;
         this.password = password;
+        this.name = name;
+        this.surname = surname;
         this.active = true;
         this.accessLevel = this.getClass().getSimpleName().toUpperCase();
     }

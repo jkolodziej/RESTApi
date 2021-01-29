@@ -8,19 +8,14 @@ import lombok.*;
 @Setter
 public class Renter extends User {
 
-    private List<Rent> rents = new ArrayList<>();
     private final String accessLevel = "RENTER";
 
     public Renter() {
         super();
     }
 
-    public Renter(String login, String password) {
-        super(login, password);
-    }
-
-    public void addRent(Rent rent) {
-        rents.add(rent);
+    public Renter(String login, String password, String name, String surname) {
+        super(login, password, name, surname);
     }
     
     @Override

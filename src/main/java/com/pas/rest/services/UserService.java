@@ -1,18 +1,13 @@
 package com.pas.rest.services;
 
-import com.pas.rest.filters.EntitySignatureValidatorFilterBinding;
 import com.pas.rest.managers.UserManager;
 import com.pas.rest.model.*;
-import com.pas.rest.utils.EntityIdentitySignerVerifier;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -111,7 +106,6 @@ public class UserService {
         }
         return Response.ok()
                 .entity(user)
-                .tag(EntityIdentitySignerVerifier.calculateEntitySignature(user))
                 .build();
     }
 
@@ -129,12 +123,7 @@ public class UserService {
     @PUT
     @Path("/renters/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    @EntitySignatureValidatorFilterBinding
-    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Renter user) {
-
-        if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, user)) {
-            return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
-        }
+    public Response modifyUser(@PathParam("login") String login, @Valid Renter user) {
 
         if (userManager.getUserWithLogin(login) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
@@ -151,11 +140,7 @@ public class UserService {
     @PUT
     @Path("/resourceAdmins/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid ResourceAdmin user) {
-
-        if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, user)) {
-            return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
-        }
+    public Response modifyUser(@PathParam("login") String login, @Valid ResourceAdmin user) {
 
         if (userManager.getUserWithLogin(login) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
@@ -172,11 +157,7 @@ public class UserService {
     @PUT
     @Path("/admins/{login}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response modifyUser(@PathParam("login") String login, @HeaderParam("If-Match") @NotNull @NotEmpty String header, @Valid Admin user) {
-
-        if (!EntityIdentitySignerVerifier.verifyEntityIntegrity(header, user)) {
-            return Response.status(Status.NOT_ACCEPTABLE.getStatusCode(), "").build();
-        }
+    public Response modifyUser(@PathParam("login") String login, @Valid Admin user) {
 
         if (userManager.getUserWithLogin(login) == null) {
             return Response.status(Status.NOT_FOUND.getStatusCode(), "User does not exist").build();
