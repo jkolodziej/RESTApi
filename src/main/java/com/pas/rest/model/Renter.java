@@ -15,8 +15,8 @@ public class Renter extends User {
         super();
     }
 
-    public Renter(String login, String password) {
-        super(login, password);
+    public Renter(String name, String login, String password) {
+        super(name, login, password);
     }
 
     public void addRent(Rent rent) {

@@ -12,8 +12,8 @@ public class Admin extends User {
         super();
     }
 
-    public Admin(String login, String password) {
-        super(login, password);
+    public Admin(String name, String login, String password) {
+        super(name, login, password);
     }
 
     @Override

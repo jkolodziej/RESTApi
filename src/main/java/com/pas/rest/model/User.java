@@ -18,6 +18,9 @@ public class User implements SignableEntity {
     private String id;
     @NotNull
     @NotEmpty
+    private String name;
+    @NotNull
+    @NotEmpty
     private String login;
     @NotNull
     @NotEmpty
@@ -32,15 +35,12 @@ public class User implements SignableEntity {
         this.accessLevel = this.getClass().getSimpleName().toUpperCase();
     }
 
-    public User(String login, String password) {
+    public User(String name, String login, String password) {
+        this.name = name;
         this.login = login;
         this.password = password;
         this.active = true;
         this.accessLevel = this.getClass().getSimpleName().toUpperCase();
-    }
-
-    public void setActivity(boolean active) {
-        this.active = active;
     }
     
     @JsonbTypeAdapter(SerializeStringToEmptyAdapter.class)

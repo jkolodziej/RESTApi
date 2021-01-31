@@ -78,7 +78,7 @@ public class LoginService {
                         .entity(JWTGenerator.updateJWTString(serializedJWTString))
                         .build();
             } else {
-                return Response.status(Status.FORBIDDEN).build();
+                return Response.status(Status.FORBIDDEN.getStatusCode(), "Your account is inactive").build();
             }
         } catch (ParseException ex) {
             return Response.status(418).build();
