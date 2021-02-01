@@ -89,6 +89,13 @@ public class UserRepository {
                     if (user.getPassword() != null) {
                         users.get(i).setPassword(user.getPassword());
                     }
+                    if (user.getName() != null) {
+                        users.get(i).setName(user.getName());
+                    }
+                    if (user.getSurname() != null) {
+                        users.get(i).setSurname(user.getSurname());
+                    }
+                    
                     users.get(i).setId(userID);
                 }
             }

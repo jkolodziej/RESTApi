@@ -1,0 +1,26 @@
+<div>
+  <p>User's name:</p>
+  <input required [(ngModel)]="user.name" />
+
+  <p>User's surname:</p>
+  <input required [(ngModel)]="user.surname" />
+
+  <p>User's login:</p>
+  <input required [(ngModel)]="user.login" />
+
+  <p>User's password:</p>
+  <input type="password" required [minlength]="8" [(ngModel)]="user.password" />
+  <br /><br />
+  <button
+    (click)="addUser()"
+    [disabled]="
+      user.password.length < 8 ||
+      user.name.length < 1 ||
+      user.surname.length < 1 ||
+      user.login.length < 1
+    "
+  >
+    Add user
+  </button>
+  <button (click)="clearForms()">Clear the forms</button>
+</div>

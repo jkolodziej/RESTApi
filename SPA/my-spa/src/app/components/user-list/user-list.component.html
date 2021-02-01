@@ -1,0 +1,41 @@
+<h1>Select a user to edit them</h1>
+<table>
+  <tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Surname</th>
+    <th>Login</th>
+  </tr>
+</table>
+<table>
+  <tr *ngFor="let user of users" (click)="userClicked(user)">
+    <td>{{ user.id }}</td>
+    <td>{{ user.name }}</td>
+    <td>{{ user.surname }}</td>
+    <td>{{ user.login }}</td>
+  </tr>
+</table>
+
+<div *ngIf="editable">
+  <p>User's name:</p>
+  <input required [(ngModel)]="editedUser.name" />
+
+  <p>User's surname:</p>
+  <input required [(ngModel)]="editedUser.surname" />
+
+  <p>User's password:</p>
+  <input type="password" minlength="8" [(ngModel)]="editedUser.password" />
+
+  <br /><br />
+  <button
+    (click)="saveChanges()"
+    [disabled]="
+      editedUser.password.length < 8 ||
+      editedUser.name.length < 1 ||
+      editedUser.surname.length < 1
+    "
+  >
+    Save changes
+  </button>
+  <button (click)="discardChanges()">Discard changes</button>
+</div>
