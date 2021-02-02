@@ -18,35 +18,11 @@ export class UserListComponent implements OnInit {
     password: '',
   };
   constructor(public apiService: APIServiceService) {}
-  u1 = {
-    id: "A",
-    name: 'A',
-    surname: 'A',
-    login: 'A',
-    password: 'A',
-  }
-  u2 = {
-    id: "A",
-    name: 'A',
-    surname: 'A',
-    login: 'A',
-    password: 'A',
-  }
-  u3 = {
-    id: "dfdfdffffffffffffffffffffffffffffffffffffffffffffffffffA",
-    name: 'A',
-    surname: 'A',
-    login: 'A',
-    password: 'A',
-  }
+
   editable = false;
-  subscription: any
 
   ngOnInit(): void {
-    this.users.push(this.u1)
-    this.users.push(this.u2)
-    this.users.push(this.u3)
-    this.subscription = this.apiService.getAll().subscribe((usr) => {
+    this.apiService.getAll().subscribe((usr) => {
       this.users = usr as User[];
     });
   }
