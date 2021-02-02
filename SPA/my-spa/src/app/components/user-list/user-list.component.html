@@ -1,13 +1,11 @@
 <h1>Select a user to edit them</h1>
-<table>
+<table id="table">
   <tr>
     <th>Id</th>
     <th>Name</th>
     <th>Surname</th>
     <th>Login</th>
   </tr>
-</table>
-<table>
   <tr *ngFor="let user of users" (click)="userClicked(user)">
     <td>{{ user.id }}</td>
     <td>{{ user.name }}</td>
